@@ -7,19 +7,30 @@ var stringifyJSON = function(obj) {
   console.log(obj)
   if (obj === null) {
     return 'null';
-  } else if (obj.constructor === Number) {
+  } else if (typeof obj === 'number') {
     return String(obj);
-  } else if (obj.constructor === Boolean) {
+  } else if (typeof obj === 'boolean') {
     return obj ? 'true' : 'false';
-  } else if (obj.constructor === String) {
+  } else if (typeof obj === 'string') {
     return '"' + obj + '"';
-  } else if (obj.constructor === Array) {
+  } else if (Array.isArray(obj) === true) {
     if (obj.length === 0) {
-      return '[]'
-    } else
-    arr = [];
-    arr.push(obj.forEach(elem => stringifyJSON(elem)))
-    console.log('arr ', arr)
-    return '"[' + arr + ']"'
+      return '[]';
+    } else {
+      return '[' + obj.reduce((acc, cv) => {
+        return [...acc, stringifyJSON(cv)]}, []) + ']';
+    };
+  } else if (typeof obj === 'object') {
+    if (obj.functions !== undefined) {
+      return '{}';
+    } else if (Object.entries(obj).length === 0) {
+      return '{}';
+    } else {
+    return '{' + Object.keys(obj).reduce((acc, cv) => {
+      return [...acc, stringifyJSON(cv) + ':' + stringifyJSON(obj[cv])]
+      }, []).join(',') + '}';
+    }
+  } else {
+    return '{}';
   }
 };
